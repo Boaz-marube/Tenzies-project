@@ -1,23 +1,21 @@
 import React from "react"
 import Die from "./Die"
+import nanoid from "nanoid"
 
 
 export default function App() {
-/**
- * Challenge: Create a `Roll Dice` button that will re-roll
- * all 10 dice
- * 
- * Clicking the button should generate a new array of numbers
- * and set the `dice` state to that new array (thus re-rendering
- * the array to the page)
- */
+
 
     const [dice, setDice] = React.useState(allNewDice())
     
     function allNewDice() {
         const newDice = []
         for (let i = 0; i < 10; i++) {
-            newDice.push(Math.ceil(Math.random() * 6))
+            newDice.push({
+                value: Math.ceil(Math.random() * 6),
+                isHeld: true,
+                id: nanoid()
+            })
         }
         return newDice
     }
@@ -25,8 +23,11 @@ export default function App() {
     function rollDice() {
         setDice(allNewDice())
     }
+    function holdDice(id){
+        console.log(id)
+    }
     
-    const diceElements = dice.map(die => <Die value={die} />)
+    const diceElements = dice.map(die => <Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={()=>holdDice(die.id)}/>)
     
     return (
         <main>

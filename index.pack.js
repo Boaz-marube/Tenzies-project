@@ -517,18 +517,13 @@ var _Die = __webpack_require__(7);
 
 var _Die2 = _interopRequireDefault(_Die);
 
+var _nanoid = __webpack_require__(20);
+
+var _nanoid2 = _interopRequireDefault(_nanoid);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function App() {
-    /**
-     * Challenge: Create a `Roll Dice` button that will re-roll
-     * all 10 dice
-     * 
-     * Clicking the button should generate a new array of numbers
-     * and set the `dice` state to that new array (thus re-rendering
-     * the array to the page)
-     */
-
     var _React$useState = _react2.default.useState(allNewDice()),
         _React$useState2 = _slicedToArray(_React$useState, 2),
         dice = _React$useState2[0],
@@ -537,7 +532,11 @@ function App() {
     function allNewDice() {
         var newDice = [];
         for (var i = 0; i < 10; i++) {
-            newDice.push(Math.ceil(Math.random() * 6));
+            newDice.push({
+                value: Math.ceil(Math.random() * 6),
+                isHeld: true,
+                id: (0, _nanoid2.default)()
+            });
         }
         return newDice;
     }
@@ -545,9 +544,14 @@ function App() {
     function rollDice() {
         setDice(allNewDice());
     }
+    function _holdDice(id) {
+        console.log(id);
+    }
 
     var diceElements = dice.map(function (die) {
-        return _react2.default.createElement(_Die2.default, { value: die });
+        return _react2.default.createElement(_Die2.default, { key: die.id, value: die.value, isHeld: die.isHeld, holdDice: function holdDice() {
+                return _holdDice(die.id);
+            } });
     });
 
     return _react2.default.createElement(
@@ -631,9 +635,15 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Die(props) {
+    var styles = {
+        backgroundColor: props.isHeld ? "#59E391" : "white"
+    };
     return _react2.default.createElement(
         "div",
-        { className: "die-face" },
+        {
+            className: "die-face",
+            style: styles,
+            onClick: props.holdDice },
         _react2.default.createElement(
             "h2",
             { className: "die-num" },
@@ -29244,6 +29254,65 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "nanoid", function() { return nanoid; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customAlphabet", function() { return customAlphabet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customRandom", function() { return customRandom; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__url_alphabet_index_js__ = __webpack_require__(21);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "urlAlphabet", function() { return __WEBPACK_IMPORTED_MODULE_0__url_alphabet_index_js__["a"]; });
+
+let random = bytes => crypto.getRandomValues(new Uint8Array(bytes))
+let customRandom = (alphabet, defaultSize, getRandom) => {
+  let mask = (2 << (Math.log(alphabet.length - 1) / Math.LN2)) - 1
+  let step = -~((1.6 * mask * defaultSize) / alphabet.length)
+  return (size = defaultSize) => {
+    let id = ''
+    while (true) {
+      let bytes = getRandom(step)
+      let j = step | 0
+      while (j--) {
+        id += alphabet[bytes[j] & mask] || ''
+        if (id.length === size) return id
+      }
+    }
+  }
+}
+let customAlphabet = (alphabet, size = 21) =>
+  customRandom(alphabet, size, random)
+let nanoid = (size = 21) =>
+  crypto.getRandomValues(new Uint8Array(size)).reduce((id, byte) => {
+    byte &= 63
+    if (byte < 36) {
+      id += byte.toString(36)
+    } else if (byte < 62) {
+      id += (byte - 26).toString(36).toUpperCase()
+    } else if (byte > 62) {
+      id += '-'
+    } else {
+      id += '_'
+    }
+    return id
+  }, '')
+
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return urlAlphabet; });
+let urlAlphabet =
+  'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict'
+
+
 
 /***/ })
 /******/ ]);
